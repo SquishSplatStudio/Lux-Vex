@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2914f403fefa884b8ac1c28baa9afab, type: 3}
+  m_Name: LightWell
+  m_EditorClassIdentifier: 
+  Icon: {fileID: 8186589764709735910, guid: 0d0c88a12569d8b4ab06c841e16ebf8d, type: 3}
+  Name: Light Well
+  Description: A light well generates light as well as increases your light capacity.
+    (J) key destroys structures.
+  Crystals: -15
+  Souls: 0
+  Light: '+10 /s '
+  Capacity: +50 / +50 (max)
