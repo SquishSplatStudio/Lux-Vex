@@ -151,7 +151,9 @@ namespace SquishSplatStudio
         {
             if (!PlacementType.Agent.HasResources()) return;
             //if (!SpawnHandler.Instance.BuildLightWorker()) return;
-            if (!SpawnHandler.Instance.SpawnLightWorker()) return;
+            //if (!SpawnHandler.Instance.SpawnLightWorker()) return;
+            if (!ControlCrystal.Instance.ActiveAndFreePurifier()) return;
+            ControlCrystal.Instance.PurifySoul();
             ResourceHandler.Instance.AdjustStats(_resourceRequirements);
             AudioController.Instance.PlayButtonClick();
             AudioController.Instance.PlayBuildingWorker();

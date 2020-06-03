@@ -9,6 +9,7 @@ namespace SquishSplatStudio
     public class ControlCrystal : MonoBehaviour
     {
         [SerializeField] public List<StructureDistance> playerStructures = new List<StructureDistance>();
+        [SerializeField] List<PlayerStructure> activePurifiers = new List<PlayerStructure>();
 
         float _nextTick = 0f;
         int _lastValue = 0;
@@ -99,8 +100,12 @@ namespace SquishSplatStudio
             // Add to the List of Structures
             playerStructures.Add(new StructureDistance(ps, Vector3.Distance(ps.transform.position, transform.position)));
 
-            // Resort the List by Distance
+            // Re-sort the List by Distance
             playerStructures = playerStructures.OrderByDescending(o => o.DistanceToStructure).ThenBy(o => o.PlayerStructure.GetComponent<LightLink>().jumpsToBase).ToList();
+
+            // If the Structure is a Purifier, add it to the list of activePurifiers
+            if (ps.GetComponent<BuildRequirements>().ObjectType.HasFlag(PlacementType.Purifier))
+                activePurifiers.Add(ps.GetComponent<PlayerStructure>());
         }
 
         /// <summary>
@@ -132,7 +137,50 @@ namespace SquishSplatStudio
                 }
             }
 
+            // If the Structure is a Purifier, remove it from the list of activePurifiers
+            if (ps.GetComponent<BuildRequirements>().ObjectType.HasFlag(PlacementType.Purifier))
+                activePurifiers.Remove(ps.GetComponent<PlayerStructure>());
+
             PlacementHandler.Instance.RebuildLightLinkArray();
+        }
+
+        /// <summary>
+        /// Sends a free purifier the command to spawn light worker
+        /// </summary>
+        public void PurifySoul()
+        {
+            bool addedToQueue = false;
+            bool structureSpawning = false;
+
+            // Do Two Loops;
+            // First for Spawning
+            foreach (PlayerStructure ps in activePurifiers)
+            {
+                if (ps.CanSpawn)
+                {
+                    ps.SpawnLightWorker();
+                    structureSpawning = true;
+                }
+
+                if (structureSpawning)
+                    break;
+            }
+
+            // Second for Queueing
+            if (!structureSpawning)
+            {
+                foreach (PlayerStructure ps in activePurifiers)
+                {
+                    if (ps.GetSpawnQueue < ps.SpawnQueue)
+                    {
+                        ps.AddToSpawnQueue();
+                        addedToQueue = true;
+                    }
+
+                    if (addedToQueue)
+                        break;
+                }
+            }
         }
 
         /// <summary>
@@ -153,6 +201,27 @@ namespace SquishSplatStudio
             }
 
             return clearOfStructures;
+        }
+
+        /// <summary>
+        /// Returns whether or not there is an active and free purifier
+        /// </summary>
+        /// <returns></returns>
+        public bool ActiveAndFreePurifier()
+        {
+            // Quick out
+            if (activePurifiers.Count == 0)
+                return false;
+
+            // Temp Variables
+            bool returnBool = false;
+
+            // Determine Bool
+            foreach (PlayerStructure ps in activePurifiers)
+                if (ps.CanSpawn || ps.GetSpawnQueue < ps.SpawnQueue) returnBool = true;
+
+            // Finally Return the Bool
+            return returnBool;
         }
     }
 

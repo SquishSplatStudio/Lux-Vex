@@ -15469,6 +15469,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17f7c14dd4fbacc4baea9ab86bcc543d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IntroText: 1
   _letterPause: 0.05
   _typeSound1: {fileID: 8300000, guid: 8c258dca7e08fb1438113b0b75348f71, type: 3}
   _levelLoader: {fileID: 175424798}

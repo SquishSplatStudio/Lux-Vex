@@ -18,7 +18,13 @@ namespace SquishSplatStudio
         [SerializeField] float spawnTime;
         [SerializeField] public Transform spawnPoint;
         [SerializeField] Transform moveToPoint;
-        [SerializeField] bool canSpawn = true;
+        [SerializeField] public bool CanSpawn = true;
+        [SerializeField] public int SpawnQueue = 4; // Note: We are checking above zero, so we need to account for that lost int value (So 3 is our base number)
+        public int GetSpawnQueue
+        {
+            get { return currentSpawnQueue; }
+        }
+        int currentSpawnQueue = 0;
 
         GameObject _moveLightWorker = null;
 
@@ -33,6 +39,11 @@ namespace SquishSplatStudio
                 else
                     SetupWorker();
             }
+        }
+
+        public void AddToSpawnQueue()
+        {
+            currentSpawnQueue = Mathf.Clamp(currentSpawnQueue + 1, 0, SpawnQueue);
         }
 
         public void SpawnDeathObject()
@@ -60,10 +71,10 @@ namespace SquishSplatStudio
         public bool SpawnLightWorker()
         {
             // Early out
-            if (!canSpawn) return false;
+            if (!CanSpawn) return false;
 
             // Prevent Loop
-            canSpawn = false;
+            CanSpawn = false;
 
             // Trigger Animations
             GetComponent<Animator>().SetTrigger("doPurification");
@@ -87,7 +98,17 @@ namespace SquishSplatStudio
             _moveLightWorker.GetComponent<LightWorker>().enabled = true;
 
             _moveLightWorker = null;
-            canSpawn = true;
+
+            if (currentSpawnQueue > 0)
+            {
+                CanSpawn = true;
+                currentSpawnQueue--;
+                SpawnLightWorker();
+            }
+            else
+            {
+                CanSpawn = true;
+            }
 
             AudioController.Instance.PlayWorkerCompleted();
         }

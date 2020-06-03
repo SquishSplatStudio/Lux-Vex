@@ -6,6 +6,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
+using UnityEngine.UI;
 
 namespace SquishSplatStudio
 {
@@ -39,7 +40,28 @@ namespace SquishSplatStudio
         public void StartGame()
         {
             AudioController.Instance.Play(_clickSoundEffect, AudioController.AudioSourceType.FX);
+            if (PlayerPrefs.GetInt("CompletedTutorial") != 1)
+            {
+                _levelLoader.LoadNextLevel();
+            }
+            else
+            {
+                _levelLoader.LoadFirstLevel();
+            }
+        }
+
+        public void NextLevel()
+        {
+            AudioController.Instance.Play(_clickSoundEffect, AudioController.AudioSourceType.FX);
+            DisableButton();
             _levelLoader.LoadNextLevel();
+        }
+
+        public void RestartLevel()
+        {
+            AudioController.Instance.Play(_clickSoundEffect, AudioController.AudioSourceType.FX);
+            DisableButton();
+            _levelLoader.RestartLevel();
         }
 
         public void ExitGame()
@@ -62,7 +84,10 @@ namespace SquishSplatStudio
 
         public void MainMenu()
         {
+            DisableButton();
             AudioController.Instance.Play(_clickSoundEffect, AudioController.AudioSourceType.FX);
+
+            // Load Menu
             _levelLoader.LoadFirstScreen();
         }
 
@@ -70,6 +95,14 @@ namespace SquishSplatStudio
         {
             AudioController.Instance.Play(_clickSoundEffect, AudioController.AudioSourceType.FX);
             _levelLoader.LoadCreditScreen(false);
+        }
+
+        void DisableButton()
+        {
+            // Reset Time Scale
+            Time.timeScale = 1;
+
+            GetComponent<Button>().interactable = false;
         }
     }
 }

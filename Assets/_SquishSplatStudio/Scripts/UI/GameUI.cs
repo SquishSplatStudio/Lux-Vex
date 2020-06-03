@@ -52,7 +52,7 @@ namespace SquishSplatStudio
         [SerializeField] TextMeshProUGUI Capacity;
         [SerializeField] TextMeshProUGUI MaxCapacity;
         [SerializeField] TextMeshProUGUI LuxLevel;
-        [SerializeField] Slider sunTimer;
+        [SerializeField] GameObject miniSun;
         float _optimizer = 1f;
 
         void LateUpdate()
@@ -92,7 +92,7 @@ namespace SquishSplatStudio
             BuildPurifierButton.interactable = ObjectType.Purifier.HasResources();
             BuildLightWellButton.interactable = ObjectType.LightWell.HasResources();
             BuildLightTowerButton.interactable = ObjectType.LightTower.HasResources();
-            PurifySoulButton.interactable = PlacementType.Agent.HasResources() && ObjectType.Purifier.AnyActiveOnScreen();
+            PurifySoulButton.interactable = PlacementType.Agent.HasResources() && ObjectType.Purifier.AnyActiveOnScreen() && ControlCrystal.Instance.ActiveAndFreePurifier();
         }
 
         void AdjustLuxLevel()
@@ -107,6 +107,15 @@ namespace SquishSplatStudio
                 luxText = luxLevel.ToString("F2");
 
             LuxLevel.text = luxText;
+        }
+
+        public void ToggleSun(bool toggle)
+        {
+            if (toggle)
+                miniSun.SetActive(true);
+
+            if (!toggle)
+                miniSun.SetActive(false);
         }
     }
 }

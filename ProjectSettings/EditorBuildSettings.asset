@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/_SquishSplatStudio/Scenes/SolarSystem.unity
     guid: a1cb5bd0c671cee429db17eaa82bbb20
   - enabled: 1
+    path: Assets/_SquishSplatStudio/Scenes/Levels/InteractiveTutorial.unity
+    guid: 15f8b1d6472135849a96a3d4099c984d
+  - enabled: 0
     path: Assets/_SquishSplatStudio/Scenes/Tutorial.unity
     guid: b2224db5951b0ca45a5c9ae014cf72aa
   - enabled: 1

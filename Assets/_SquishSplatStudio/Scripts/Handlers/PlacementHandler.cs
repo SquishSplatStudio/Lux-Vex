@@ -173,6 +173,9 @@ namespace SquishSplatStudio
 
                         // Register the Work Command
                         WaypointHandler.Instance.RegisterWork(vc.WorldObject.GetComponent<WorkCommandHelper>().AssignedWork);
+
+                        // Mark the Waypoint as Built
+                        vc.WorldObject.GetComponent<BuildRequirements>().objectBuilt = true;
                     }
 
                     // Do Structure Placement

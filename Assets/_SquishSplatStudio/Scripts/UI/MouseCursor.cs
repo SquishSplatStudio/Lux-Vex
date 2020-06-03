@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace SquishSplatStudio
 {
@@ -14,9 +15,11 @@ namespace SquishSplatStudio
         public float speed = 8.0f;
         public float distanceFromCamera = 0.1f;
 
+        public List<ParticleSystem> myParticleSystems = new List<ParticleSystem>();
         Vector3 ui2D3DPosition;
         bool ui2DCursorSet = false;
-
+        float lastTime;
+        float deltaTime;
 
         // Singleton Reference
         private static MouseCursor _instance;
@@ -36,13 +39,39 @@ namespace SquishSplatStudio
         }
 
         // Start is called before the first frame update
-        void Start() => Cursor.visible = !use3DCursor;
+        void Start()
+        {
+            foreach (ParticleSystem ps in world3DCursor.GetComponentsInChildren<ParticleSystem>())
+                myParticleSystems.Add(ps);
+
+            Cursor.visible = !use3DCursor;
+            lastTime = Time.realtimeSinceStartup;
+        }
 
         // Update is called once per frame
         void Update()
         {
+            // Sim DeltaTime
+            deltaTime = Time.realtimeSinceStartup - lastTime;
+
+            // Move mouse around scene
             GetScreenSpacePosition();
             MoveMouseCursor();
+            UpdateParticleSystems();
+
+            // Adjust DeltaTime
+            lastTime = Time.realtimeSinceStartup;
+        }
+
+        /// <summary>
+        /// Updates the Particle Systems with this Simulated Delta Time
+        /// </summary>
+        void UpdateParticleSystems()
+        {
+            foreach(ParticleSystem ps in myParticleSystems)
+            {
+                ps.Simulate(deltaTime, true, false);
+            }
         }
 
         /// <summary>
@@ -63,7 +92,7 @@ namespace SquishSplatStudio
             mousePosition.z = distanceFromCamera;
 
             Vector3 mouseScreenToWorld = RenderCamera.ScreenToWorldPoint(mousePosition);
-            ui2D3DPosition = Vector3.Lerp(ui2D3DPosition, mouseScreenToWorld, 1.0f - Mathf.Exp(-speed * Time.deltaTime));
+            ui2D3DPosition = Vector3.Lerp(ui2D3DPosition, mouseScreenToWorld, 1.0f - Mathf.Exp(-speed * deltaTime));
         }
 
         /// <summary>
@@ -85,7 +114,8 @@ namespace SquishSplatStudio
             }
 
             // Move the Ground Light
-            groundLight.position = InputHandler.Instance.currentWorldMousePosition;
+            if (groundLight != null)
+                groundLight.position = InputHandler.Instance.currentWorldMousePosition;
         }
     }
 }

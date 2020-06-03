@@ -11,21 +11,33 @@ namespace SquishSplatStudio
 {
     public class StoryScript : MonoBehaviour
     {
+        [SerializeField] bool IntroText = false;
         [SerializeField] float _letterPause = 0.2f;
         [SerializeField] AudioClip _typeSound1;
         [SerializeField] LevelLoader _levelLoader;
         [SerializeField] float _pause;
+        [SerializeField] public bool TextFinished = false;
 
         string _message;
         TextMeshProUGUI _textComp;
 
         void Start()
         {
+            Init();
+        }
+
+        public void Init()
+        {
             _textComp = GetComponent<TextMeshProUGUI>();
             _message = _textComp.text;
             _textComp.text = string.Empty;
+
+            // Type Text
             StartCoroutine(TypeText());
-            StartCoroutine(LoadNextLevel());
+
+            // Load Next Level if Intro Text
+            if (_levelLoader != null && IntroText)
+                StartCoroutine(LoadNextLevel());
         }
 
         IEnumerator LoadNextLevel()
@@ -43,6 +55,8 @@ namespace SquishSplatStudio
                 if (_typeSound1)
                     AudioController.Instance.Play(_typeSound1, AudioController.AudioSourceType.FX, .2f);
             }
+
+            TextFinished = true;
         }
     }
 }

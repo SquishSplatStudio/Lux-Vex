@@ -8,16 +8,17 @@ namespace SquishSplatStudio
     {
         float _currentTimer = 0f;
         public bool currentlyVisible = false;
-        List<Transform> _childTransforms = new List<Transform>();
+        List<GameObject> _childTransforms = new List<GameObject>();
         public LightLink lastLightLinkInRange;
+        bool beenSeen = false;
 
 
         // Build List of my Transforms
         private void Start()
         {
-            foreach (Transform tran in transform.GetComponentsInChildren<Transform>())
+            foreach (Transform tran in GetComponentsInChildren<Transform>())
             {
-                _childTransforms.Add(tran);
+                _childTransforms.Add(tran.gameObject);
             }
 
             if (currentlyVisible) MakeVisible();
@@ -27,13 +28,17 @@ namespace SquishSplatStudio
         // Update is called once per frame
         void Update()
         {
-            // Deduct from the Timer
-            if (_currentTimer > 0)
-                _currentTimer -= Time.deltaTime;
+            // Only keep checking if Object hasn't been seen
+            if (!beenSeen)
+            {
+                // Deduct from the Timer
+                if (_currentTimer > 0)
+                    _currentTimer -= Time.deltaTime;
 
-            // Check if we need to Process once Timer is done
-            if (_currentTimer <= 0)
-                CheckVisibility();
+                // Check if we need to Process once Timer is done
+                if (_currentTimer <= 0)
+                    CheckVisibility();
+            }
         }
 
         void CheckVisibility()
@@ -76,31 +81,38 @@ namespace SquishSplatStudio
         {
             currentlyVisible = true;
 
-            foreach (Transform tran in _childTransforms)
+            foreach (GameObject go in _childTransforms)
             {
-                if (tran.gameObject != this.gameObject)
+                if (go.gameObject != this.gameObject)
                 {
-                    tran.gameObject.SetActive(true);
+                    go.gameObject.SetActive(true);
                 }
 
-                if (tran.GetComponent<MeshRenderer>())
-                    tran.GetComponent<MeshRenderer>().enabled = true;
+                if (go.GetComponent<MeshRenderer>())
+                    go.GetComponent<MeshRenderer>().enabled = true;
             }
+
+            if (GetComponent<BuildRequirements>())
+            {
+                if (GetComponent<BuildRequirements>().ObjectType != PlacementType.Shade)
+                    beenSeen = true;
+            }
+            
         }
 
         void MakeHidden()
         {
             currentlyVisible = false;
 
-            foreach (Transform tran in _childTransforms)
+            foreach (GameObject go in _childTransforms)
             {
-                if (tran.gameObject != this.gameObject)
+                if (go.gameObject != this.gameObject)
                 {
-                    tran.gameObject.SetActive(false);
+                    go.gameObject.SetActive(false);
                 }
 
-                if (tran.GetComponent<MeshRenderer>())
-                    tran.GetComponent<MeshRenderer>().enabled = false;
+                if (go.GetComponent<MeshRenderer>())
+                    go.GetComponent<MeshRenderer>().enabled = false;
             }
         }
     }

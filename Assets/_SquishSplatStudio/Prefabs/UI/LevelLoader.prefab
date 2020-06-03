@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3115961535991850348}
   - component: {fileID: 3115961535991850350}
   - component: {fileID: 3115961535991850351}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 3115961537796465319}
   - component: {fileID: 3115961537796465320}
   - component: {fileID: 3115961537796465323}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Fade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,9 +124,9 @@ Canvas:
   m_GameObject: {fileID: 3115961537796465317}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 1
   m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -216,7 +216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3115961537942156710}
   - component: {fileID: 3115961537942156713}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: LevelLoader
   m_TagString: Untagged
   m_Icon: {fileID: 0}

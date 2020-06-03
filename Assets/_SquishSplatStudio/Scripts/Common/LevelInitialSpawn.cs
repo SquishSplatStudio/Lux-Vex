@@ -6,7 +6,7 @@ namespace SquishSplatStudio
 {
     public class LevelInitialSpawn : MonoBehaviour
     {
-        
+        public bool startTutorial = false;
         public bool doSpawn;
         public Animator myAnimator;
         public GameObject controlCrystal;
@@ -55,6 +55,10 @@ namespace SquishSplatStudio
 
             // Update the Light Link Array
             PlacementHandler.Instance.RebuildLightLinkArray();
+
+            // Do we start the Tutorial?
+            if (startTutorial)
+                TutorialController.Instance.Init();
         }
     }
 }
