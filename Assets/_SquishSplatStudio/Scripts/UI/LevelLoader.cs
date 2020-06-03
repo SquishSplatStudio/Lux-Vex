@@ -15,16 +15,34 @@ public class LevelLoader : MonoBehaviour
     [SerializeField] float _transitionTime = 1f;
     public Canvas CreditCanvas;
     AsyncOperation _levelToLoad;
+    bool _sceneReady;
 
-    public void LoadFirstScreen() => StartCoroutine(LoadLevel(0));
+    private void Update()
+    {
+        if (_levelToLoad.isDone)
+        {
+            _levelToLoad.allowSceneActivation = true;
 
-    public void LoadFirstLevel() => StartCoroutine(LoadLevel(3));
+            ResetSceneLoad();
+        }
+    }
 
-    public void LoadNextLevel() => StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex + 1));
+    public void LoadFirstScreen() => StartLevelLoad(0);
 
-    public void LoadPreviousLevel() => StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex - 1));
+    public void LoadFirstLevel() => StartLevelLoad(3);
 
-    public void RestartLevel() => StartCoroutine(LoadLevel(SceneManager.GetActiveScene().buildIndex));
+    public void LoadNextLevel() => StartLevelLoad(SceneManager.GetActiveScene().buildIndex + 1);
+
+    public void LoadPreviousLevel() => StartLevelLoad(SceneManager.GetActiveScene().buildIndex - 1);
+
+    public void RestartLevel() => StartLevelLoad(SceneManager.GetActiveScene().buildIndex);
+
+    void StartLevelLoad(int levelIndex)
+    {
+        _levelToLoad = SceneManager.LoadSceneAsync(levelIndex, LoadSceneMode.Single);
+
+        StartCoroutine(InitLevelLoad());
+    }
 
     private IEnumerator LoadLevel(int levelIndex)
     {
@@ -33,8 +51,27 @@ public class LevelLoader : MonoBehaviour
         _levelToLoad.allowSceneActivation = false;
         
         yield return new WaitForSeconds(_transitionTime);
-        _levelToLoad.allowSceneActivation = true;
+
+        while (!_levelToLoad.isDone)
+        {
+            if (_levelToLoad.progress >= 0.9f)
+                _sceneReady = true;
+                //_levelToLoad.allowSceneActivation = true;
+
+            yield return null;
+        }
+
+        ResetSceneLoad();
         //SceneManager.LoadScene(levelIndex);
+    }
+
+    private IEnumerator InitLevelLoad()
+    {
+        _transition.SetTrigger("Start");
+
+        yield return new WaitForSeconds(_transitionTime);
+
+        _levelToLoad.allowSceneActivation = true;
     }
 
     private IEnumerator LoadEmpty(bool visible = false)
@@ -64,5 +101,12 @@ public class LevelLoader : MonoBehaviour
             Time.timeScale = 1;
         }
         StartCoroutine(LoadEmpty(visible));
+    }
+
+    void ResetSceneLoad()
+    {
+        _levelToLoad.allowSceneActivation = false;
+        _levelToLoad = null;
+        _sceneReady = false;
     }
 }
